@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI
 from app.routers import bikes, users, transport_jobs
-from app.db import database
+from app.db.database import database
 
 app = FastAPI(title="Biciship API")
 

@@ -20,5 +20,3 @@ async def shutdown():
 @app.get("/")
 def root():
     return {"message": "Biciship API funcionando 🚲"}
-
-import os

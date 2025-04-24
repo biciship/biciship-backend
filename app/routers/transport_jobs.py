@@ -3,5 +3,5 @@ from fastapi import APIRouter
 router = APIRouter()
 
 @router.get("/")
-def get_jobs():
-    return [{"id": 1, "status": "en ruta"}]
+def get_users():
+    return [{"id": 1, "name": "User 1"}]

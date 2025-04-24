@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+import logging
+
 from app.routers import users, bikes, transport_jobs
 from app.db.database import database
 
@@ -10,11 +12,17 @@ app.include_router(transport_jobs.router, prefix="/transport-jobs", tags=["Trans
 
 @app.on_event("startup")
 async def startup():
-    await database.connect()
+    try:
+        await database.connect()
+    except Exception as e:
+        logging.error(f"Error al conectar con la base de datos: {e}")
 
 @app.on_event("shutdown")
 async def shutdown():
-    await database.disconnect()
+    try:
+        await database.disconnect()
+    except Exception as e:
+        logging.warning(f"Error al cerrar la conexión: {e}")
 
 @app.get("/")
 def root():

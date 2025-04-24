@@ -1,1 +1,0 @@
-# Biciship Backend (FastAPI)

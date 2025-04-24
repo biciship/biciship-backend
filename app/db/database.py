@@ -1,5 +1,7 @@
-from databases import Database
 import os
+from dotenv import load_dotenv
+from databases import Database
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://api_user:password@localhost:5432/biciship")
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")
 database = Database(DATABASE_URL)

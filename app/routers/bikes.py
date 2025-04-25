@@ -12,16 +12,20 @@ async def get_bikes():
 
 @router.post("/")
 async def create_bike(payload: dict):
-    model = payload.get("model")
-    status = payload.get("status", "available")
-    location = payload.get("location", None)  # permite null
+    try:
+        model = payload.get("model")
+        status = payload.get("status", "available")
+        location = payload.get("location", None)
 
-    if not model:
-        raise HTTPException(status_code=400, detail="Model is required")
+        if not model:
+            raise HTTPException(status_code=400, detail="Model is required")
 
-    query = insert(bikes).values(model=model, status=status, location=location)
-    last_record_id = await database.execute(query)
-    return {"id": last_record_id}
+        query = insert(bikes).values(model=model, status=status, location=location)
+        last_record_id = await database.execute(query)
+        return {"id": last_record_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.delete("/{bike_id}")
 async def delete_bike(bike_id: int):

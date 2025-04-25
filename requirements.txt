@@ -4,3 +4,5 @@ databases[postgresql]
 psycopg2-binary
 python-dotenv
 sqlalchemy
+passlib[bcrypt]
+python-jose

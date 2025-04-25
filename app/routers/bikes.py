@@ -15,7 +15,7 @@ async def create_bike(payload: dict):
     try:
         model = payload.get("model")
         status = payload.get("status", "available")
-        location = payload.get("location", None)
+        location = payload.get("location")
 
         if not model:
             raise HTTPException(status_code=400, detail="Model is required")
@@ -23,8 +23,10 @@ async def create_bike(payload: dict):
         query = insert(bikes).values(model=model, status=status, location=location)
         last_record_id = await database.execute(query)
         return {"id": last_record_id}
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Error creating bike: {str(e)}")
+
 
 
 @router.delete("/{bike_id}")

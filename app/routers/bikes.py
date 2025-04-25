@@ -13,13 +13,13 @@ async def get_bikes():
 @router.post("/")
 async def create_bike(payload: dict):
     model = payload.get("model")
-    location = payload.get("location")
     status = payload.get("status", "available")
+    location = payload.get("location", None)  # permite null
 
     if not model:
         raise HTTPException(status_code=400, detail="Model is required")
 
-    query = insert(bikes).values(model=model, location=location, status=status)
+    query = insert(bikes).values(model=model, status=status, location=location)
     last_record_id = await database.execute(query)
     return {"id": last_record_id}
 

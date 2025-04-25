@@ -11,6 +11,7 @@ users = Table(
     Column("id", Integer, primary_key=True),
     Column("name", String, nullable=False),
     Column("email", String, unique=True, nullable=False),
+    Column("password", String, nullable=False),  # <-- ESTA LÍNEA NUEVA
     Column("role", String, default="rider"),  # rider, admin, operador...
     Column("created_at", DateTime, default=datetime.datetime.utcnow),
 )

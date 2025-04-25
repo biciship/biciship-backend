@@ -12,7 +12,14 @@ async def get_users():
 
 @router.post("/")
 async def create_user(payload: dict):
-    query = insert(users).values(name=payload["name"], email=payload["email"])
+    name = payload.get("name")
+    email = payload.get("email")
+    role = payload.get("role", "rider")  # default si no lo mandan
+
+    if not name or not email:
+        raise HTTPException(status_code=400, detail="Name and email are required")
+
+    query = insert(users).values(name=name, email=email, role=role)
     last_record_id = await database.execute(query)
     return {"id": last_record_id}
 

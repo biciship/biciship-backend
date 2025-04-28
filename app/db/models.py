@@ -3,7 +3,7 @@ from sqlalchemy import (
 )
 import datetime
 
-metadata = MetaData()
+metadata = MetaData(schema="public")
 
 users = Table(
     "users",

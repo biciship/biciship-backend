@@ -1,10 +1,10 @@
-# app/reset_database_safe.py
+# app/reset_database_alternativo.py
 
 from sqlalchemy import create_engine, text
 import os
 from dotenv import load_dotenv
-from sqlalchemy.exc import OperationalError
 from app.db.models import metadata
+from sqlalchemy.exc import OperationalError
 
 def main():
     load_dotenv()
@@ -25,15 +25,23 @@ def main():
         print("❌ Error de conexión:", e)
         return
 
-    print("⚙️ Reseteando base de datos...")
+    print("⚙️ Borrando tablas existentes si existen...")
     try:
         with engine.begin() as conn:
-            conn.execute(text("DROP SCHEMA public CASCADE;"))
-            conn.execute(text("CREATE SCHEMA public;"))
-            metadata.create_all(bind=engine)
-            print("🎉 Base de datos reseteada y recreada correctamente.")
+            conn.execute(text("DROP TABLE IF EXISTS transport_jobs CASCADE;"))
+            conn.execute(text("DROP TABLE IF EXISTS bikes CASCADE;"))
+            conn.execute(text("DROP TABLE IF EXISTS users CASCADE;"))
+        print("✅ Tablas eliminadas (si existían).")
     except Exception as e:
-        print("❌ Error durante el reseteo:", e)
+        print("❌ Error al eliminar tablas:", e)
+        return
+
+    print("⚙️ Creando tablas nuevas...")
+    try:
+        metadata.create_all(bind=engine)
+        print("🎉 Tablas recreadas correctamente.")
+    except Exception as e:
+        print("❌ Error al crear tablas:", e)
 
 if __name__ == "__main__":
     main()

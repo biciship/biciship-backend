@@ -11,4 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY app/ ./app
 
 # Comando de arranque: usar $PORT dinámico que Cloud Run inyecta
-CMD exec uvicorn app.health:app --host 0.0.0.0 --port $PORT
+CMD exec uvicorn app.main:app --host 0.0.0.0 --port $PORT

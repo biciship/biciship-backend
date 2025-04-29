@@ -13,6 +13,7 @@ async def register_user(payload: dict):
     name = payload.get("name")
     email = payload.get("email")
     password = payload.get("password")
+    role = payload.get("role", "rider")  # 👈 admite rol opcional
 
     if not name or not email or not password:
         raise HTTPException(status_code=400, detail="Todos los campos son obligatorios")
@@ -23,9 +24,10 @@ async def register_user(payload: dict):
         raise HTTPException(status_code=400, detail="Email ya registrado")
 
     hashed_pw = hash_password(password)
-    query = insert(users).values(name=name, email=email, password=hashed_pw)
+    query = insert(users).values(name=name, email=email, password=hashed_pw, role=role)
     await database.execute(query)
     return {"message": "Usuario creado correctamente"}
+
 
 # Login
 @router.post("/login")

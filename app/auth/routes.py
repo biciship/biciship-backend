@@ -36,5 +36,10 @@ async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
     if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
-    token = create_access_token({"sub": user.email})
+    # 👇 Corregido: incluir el rol en el token
+    token = create_access_token({
+        "sub": user["email"],
+        "role": user["role"]
+    })
     return {"access_token": token, "token_type": "bearer"}
+

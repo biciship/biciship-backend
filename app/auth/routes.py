@@ -13,7 +13,7 @@ async def register_user(payload: dict):
     name = payload.get("name")
     email = payload.get("email")
     password = payload.get("password")
-    role = payload.get("role", "rider")  # 👈 admite rol opcional
+    role = payload.get("role") or "rider"  # 👈 admite rol opcional
 
     if not name or not email or not password:
         raise HTTPException(status_code=400, detail="Todos los campos son obligatorios")

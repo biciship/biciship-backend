@@ -4,6 +4,7 @@ from app.db.database import database
 from app.db.models import users
 from app.auth.utils import decode_access_token
 from sqlalchemy import insert, select, delete
+from app.auth.dependencies import require_role  # 👈 añadimos esto
 
 router = APIRouter()
 
@@ -23,7 +24,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 # --- Endpoints ---
 
-@router.get("/", dependencies=[Depends(get_current_user)])
+@router.get("/", dependencies=[Depends(require_role(["admin", "operador"]))])
 async def get_users():
     query = select(users)
     return await database.fetch_all(query)
@@ -41,7 +42,7 @@ async def create_user(payload: dict):
     last_record_id = await database.execute(query)
     return {"id": last_record_id}
 
-@router.delete("/{user_id}", dependencies=[Depends(get_current_user)])
+@router.delete("/{user_id}", dependencies=[Depends(require_role(["admin", "operador"]))])
 async def delete_user(user_id: int):
     query = delete(users).where(users.c.id == user_id)
     result = await database.execute(query)

@@ -24,6 +24,8 @@ bikes = Table(
     Column("status", String, default="available"),  # available, in_use, maintenance
     Column("location", String, nullable=True),
     Column("created_at", DateTime, default=datetime.datetime.utcnow),
+    Column("owner_id", Integer, ForeignKey("users.id")),
+
 )
 
 transport_jobs = Table(
@@ -36,4 +38,7 @@ transport_jobs = Table(
     Column("destination", String, nullable=False),
     Column("status", String, default="pending"),  # pending, in_progress, completed
     Column("created_at", DateTime, default=datetime.datetime.utcnow),
+    Column("assigned_to_id", Integer, ForeignKey("users.id")),
+    Column("client_id", Integer, ForeignKey("users.id")),
+
 )

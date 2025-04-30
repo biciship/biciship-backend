@@ -33,7 +33,7 @@ async def get_users():
 async def create_user(payload: dict):
     name = payload.get("name")
     email = payload.get("email")
-    role = payload.get("role", "rider")  # default si no lo mandan
+    role = payload.get("role", "cliente")  # default si no lo mandan
 
     if not name or not email:
         raise HTTPException(status_code=400, detail="Name and email are required")

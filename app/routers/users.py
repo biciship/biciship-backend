@@ -24,10 +24,11 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 
 # --- Endpoints ---
 
-@router.get("/", dependencies=[Depends(require_role(["admin", "operador"]))])
-async def get_users():
+@router.get("/")
+async def get_users(dep=Depends(require_role(["admin", "operador"]))):
     query = select(users)
     return await database.fetch_all(query)
+
 
 @router.post("/")
 async def create_user(payload: dict):
@@ -42,8 +43,11 @@ async def create_user(payload: dict):
     last_record_id = await database.execute(query)
     return {"id": last_record_id}
 
-@router.delete("/{user_id}", dependencies=[Depends(require_role(["admin", "operador"]))])
-async def delete_user(user_id: int):
+@router.delete("/{user_id}")
+async def delete_user(
+    user_id: int,
+    dep=Depends(require_role(["admin", "operador"]))
+):
     query = delete(users).where(users.c.id == user_id)
     result = await database.execute(query)
     if result:

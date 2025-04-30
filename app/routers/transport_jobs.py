@@ -23,7 +23,9 @@ async def create_job(payload: dict):
     return {"id": last_record_id}
 
 @router.delete("/{job_id}")
-async def delete_job(job_id: int):
+async def delete_job(
+    job_id: int,
+    dep=Depends(require_role(["admin", "operador"]))):
     query = delete(transport_jobs).where(transport_jobs.c.id == job_id)
     result = await database.execute(query)
     if result:

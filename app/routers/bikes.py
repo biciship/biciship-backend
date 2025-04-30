@@ -28,9 +28,10 @@ async def create_bike(payload: dict):
         raise HTTPException(status_code=500, detail=f"Error creating bike: {str(e)}")
 
 
-
 @router.delete("/{bike_id}")
-async def delete_bike(bike_id: int):
+async def delete_bike(
+    bike_id: int,
+    dep=Depends(require_role(["admin", "operador"]))):
     query = delete(bikes).where(bikes.c.id == bike_id)
     result = await database.execute(query)
     if result:

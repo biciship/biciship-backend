@@ -46,8 +46,7 @@ async def create_user(payload: dict):
 @router.delete("/{user_id}")
 async def delete_user(
     user_id: int,
-    dep=Depends(require_role(["admin", "operador"]))
-):
+    dep=Depends(require_role(["admin", "operador"]))):
     query = delete(users).where(users.c.id == user_id)
     result = await database.execute(query)
     if result:

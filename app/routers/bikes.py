@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from app.db.database import database
 from app.db.models import bikes
 from sqlalchemy import insert, select, delete
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import get_current_user_role
 from app.auth.dependencies import require_role
 
 router = APIRouter()
@@ -13,7 +13,7 @@ async def get_bikes():
     return await database.fetch_all(query)
 
 @router.post("/")
-async def create_bike(payload: dict, user=Depends(get_current_user)):
+async def create_bike(payload: dict, user=Depends(get_current_user_role)):
     try:
         model = payload.get("model")
         status = payload.get("status", "available")

@@ -1,37 +1,60 @@
-from fastapi import APIRouter, HTTPException
-from app.db.database import database
-from app.db.models import transport_jobs
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy import insert, select, delete
-from app.auth.dependencies import get_current_user_role
+from app.db.database import database
+from app.db.models import transport_jobs, bikes
 from app.auth.dependencies import require_role
-
 
 router = APIRouter()
 
 @router.get("/")
-async def get_jobs():
-    query = select(transport_jobs)
+async def get_jobs(user=Depends(require_role(["admin", "operador", "cliente", "transportista"]))):
+    role = user["role"]
+    user_id = user["user_id"]
+
+    if role == "cliente":
+        query = select(transport_jobs).where(transport_jobs.c.client_id == user_id)
+    elif role == "transportista":
+        query = select(transport_jobs).where(transport_jobs.c.assigned_to_id == user_id)
+    else:
+        query = select(transport_jobs)
+
     return await database.fetch_all(query)
 
 @router.post("/")
-async def create_job(payload: dict, user=Depends(get_current_user_role)):
-    query = insert(transport_jobs).values(
-        user_id=payload["user_id"],
-        bike_id=payload["bike_id"],
-        origin=payload["origin"],
-        destination=payload["destination"],
-        status=payload.get("status", "pending"),
-        assigned_to_id=None  # opcional
-    )
-    last_record_id = await database.execute(query)
-    return {"id": last_record_id}
+async def create_job(payload: dict, user=Depends(require_role(["cliente"]))):
+    try:
+        bike_id = payload.get("bike_id")
+        origin = payload.get("origin")
+        destination = payload.get("destination")
+
+        if not all([bike_id, origin, destination]):
+            raise HTTPException(status_code=400, detail="Faltan campos requeridos")
+
+        bike_query = select(bikes).where(bikes.c.id == bike_id)
+        bike = await database.fetch_one(bike_query)
+        if not bike:
+            raise HTTPException(status_code=404, detail="Bici no encontrada")
+
+        if bike["owner_id"] != user["user_id"]:
+            raise HTTPException(status_code=403, detail="No eres dueño de esta bici")
+
+        query = insert(transport_jobs).values(
+            bike_id=bike_id,
+            origin=origin,
+            destination=destination,
+            status="pending",
+            client_id=user["user_id"]
+        )
+        job_id = await database.execute(query)
+        return {"id": job_id}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creando trabajo: {str(e)}")
 
 @router.delete("/{job_id}")
-async def delete_job(
-    job_id: int,
-    dep=Depends(require_role(["admin", "operador"]))):
+async def delete_job(job_id: int, dep=Depends(require_role(["admin", "operador"]))):
     query = delete(transport_jobs).where(transport_jobs.c.id == job_id)
     result = await database.execute(query)
     if result:
-        return {"message": "Job deleted"}
-    raise HTTPException(status_code=404, detail="Job not found")
+        return {"message": "Trabajo eliminado"}
+    raise HTTPException(status_code=404, detail="Trabajo no encontrado")

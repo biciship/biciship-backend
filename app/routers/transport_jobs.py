@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from app.db.database import database
 from app.db.models import transport_jobs
 from sqlalchemy import insert, select, delete
-from app.auth.dependencies import get_current_user
+from app.auth.dependencies import get_current_user_role
 from app.auth.dependencies import require_role
 
 
@@ -14,7 +14,7 @@ async def get_jobs():
     return await database.fetch_all(query)
 
 @router.post("/")
-async def create_job(payload: dict, user=Depends(get_current_user)):
+async def create_job(payload: dict, user=Depends(get_current_user_role)):
     query = insert(transport_jobs).values(
         user_id=payload["user_id"],
         bike_id=payload["bike_id"],

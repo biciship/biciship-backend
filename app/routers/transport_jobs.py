@@ -6,19 +6,6 @@ from app.auth.dependencies import get_current_user
 from app.auth.dependencies import require_role
 
 
-@router.post("/")
-async def create_job(payload: dict, user=Depends(get_current_user)):
-    ...
-    query = insert(transport_jobs).values(
-        client_id=user["user_id"],
-        bike_id=payload["bike_id"],
-        origin=payload["origin"],
-        destination=payload["destination"],
-        status=payload.get("status", "pending"),
-        assigned_to_id=None  # opcional
-    )
-
-
 router = APIRouter()
 
 @router.get("/")
@@ -33,7 +20,8 @@ async def create_job(payload: dict, user=Depends(get_current_user)):
         bike_id=payload["bike_id"],
         origin=payload["origin"],
         destination=payload["destination"],
-        status=payload.get("status", "pending")
+        status=payload.get("status", "pending"),
+        assigned_to_id=None  # opcional
     )
     last_record_id = await database.execute(query)
     return {"id": last_record_id}

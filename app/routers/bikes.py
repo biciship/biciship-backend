@@ -1,8 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy import insert, select, delete
 from app.db.database import database
 from app.db.models import bikes
-from sqlalchemy import insert, select, delete
-from app.auth.dependencies import get_current_user_role
 from app.auth.dependencies import require_role
 
 router = APIRouter()
@@ -13,7 +12,7 @@ async def get_bikes():
     return await database.fetch_all(query)
 
 @router.post("/")
-async def create_bike(payload: dict, user=Depends(get_current_user_role)):
+async def create_bike(payload: dict, user=Depends(require_role(["cliente"]))):
     try:
         model = payload.get("model")
         status = payload.get("status", "available")
@@ -22,18 +21,20 @@ async def create_bike(payload: dict, user=Depends(get_current_user_role)):
         if not model:
             raise HTTPException(status_code=400, detail="Model is required")
 
-        query = insert(bikes).values(model=model, status=status, location=location, owner_id=user["user_id"] )
+        query = insert(bikes).values(
+            model=model,
+            status=status,
+            location=location,
+            owner_id=user["user_id"]
+        )
         last_record_id = await database.execute(query)
         return {"id": last_record_id}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating bike: {str(e)}")
 
-
 @router.delete("/{bike_id}")
-async def delete_bike(
-    bike_id: int,
-    dep=Depends(require_role(["admin", "operador"]))):
+async def delete_bike(bike_id: int, dep=Depends(require_role(["admin", "operador"]))):
     query = delete(bikes).where(bikes.c.id == bike_id)
     result = await database.execute(query)
     if result:

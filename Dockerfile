@@ -8,7 +8,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar el código fuente
-COPY app/ ./app
+COPY . .
 
 # Comando de arranque: usar $PORT dinámico que Cloud Run inyecta
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]

@@ -35,7 +35,7 @@ async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
     query = select(users).where(users.c.email == form_data.username)
     user = await database.fetch_one(query)
 
-    if not user or not verify_password(form_data.password, user.password):
+    if not user or not verify_password(form_data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
     # 👇 Corregido: incluir el rol en el token

@@ -32,7 +32,6 @@ transport_jobs = Table(
     "transport_jobs",
     metadata,
     Column("id", Integer, primary_key=True),
-    Column("user_id", Integer, ForeignKey("users.id"), nullable=False),
     Column("bike_id", Integer, ForeignKey("bikes.id"), nullable=False),
     Column("origin", String, nullable=False),
     Column("destination", String, nullable=False),

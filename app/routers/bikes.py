@@ -13,7 +13,7 @@ async def get_bikes():
     return await database.fetch_all(query)
 
 @router.post("/")
-async def create_bike(payload: dict), user=Depends(get_current_user)):
+async def create_bike(payload: dict, user=Depends(get_current_user)):
     try:
         model = payload.get("model")
         status = payload.get("status", "available")

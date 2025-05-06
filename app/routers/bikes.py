@@ -21,7 +21,7 @@ async def get_bikes(user=Depends(require_role(["admin", "operador", "cliente", "
     return await database.fetch_all(query)
 
 @router.post("/")
-async def create_bike(payload: dict, user=Depends(require_role(["cliente"]))):
+async def create_bike(payload: dict, user=Depends(require_role(["admin", "cliente"]))):
     try:
         model = payload.get("model")
         status = payload.get("status", "available")

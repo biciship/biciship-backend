@@ -41,3 +41,15 @@ transport_jobs = Table(
     Column("client_id", Integer, ForeignKey("users.id")),
 
 )
+
+delete_requests = Table(
+    "delete_requests",
+    metadata,
+    Column("id", Integer, primary_key=True),
+    Column("user_id", Integer, ForeignKey("users.id"), nullable=False),
+    Column("resource_type", String, nullable=False),  # 'bike' o 'job'
+    Column("resource_id", Integer, nullable=False),
+    Column("reason", String, nullable=False),
+    Column("created_at", DateTime, default=datetime.datetime.utcnow),
+)
+

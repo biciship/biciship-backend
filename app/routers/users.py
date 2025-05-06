@@ -15,6 +15,7 @@ async def get_users(user=Depends(require_role(["admin", "operador"]))):
 async def create_user(payload: dict, user=Depends(require_role(["admin"]))):
     name = payload.get("name")
     email = payload.get("email")
+    password = payload.get("password", "clave123")  # 👈 por si se quiere crear manualmente desde admin
     role = payload.get("role", "cliente")
 
     if not name or not email:

@@ -21,7 +21,7 @@ async def get_jobs(user=Depends(require_role(["admin", "operador", "cliente", "t
     return await database.fetch_all(query)
 
 @router.post("/")
-async def create_job(payload: dict, user=Depends(require_role(["cliente"]))):
+async def create_job(payload: dict, user=Depends(require_role(["admin", "cliente"]))):
     try:
         bike_id = payload.get("bike_id")
         origin = payload.get("origin")
@@ -35,7 +35,7 @@ async def create_job(payload: dict, user=Depends(require_role(["cliente"]))):
         if not bike:
             raise HTTPException(status_code=404, detail="Bici no encontrada")
 
-        if bike["owner_id"] != user["user_id"]:
+        if bike["owner_id"] != user["user_id"] and user["role"] != "admin":
             raise HTTPException(status_code=403, detail="No eres dueño de esta bici")
 
         query = insert(transport_jobs).values(

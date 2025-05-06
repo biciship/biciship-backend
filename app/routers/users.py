@@ -12,7 +12,7 @@ async def get_users(user=Depends(require_role(["admin", "operador"]))):
     return await database.fetch_all(query)
 
 @router.post("/")
-async def create_user(payload: dict, user=Depends(require_role(["admin", "operador"]))):
+async def create_user(payload: dict, user=Depends(require_role(["admin"]))):
     name = payload.get("name")
     email = payload.get("email")
     role = payload.get("role", "cliente")

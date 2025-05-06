@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy import insert, select, delete
 from app.db.database import database
-from app.db.models import transport_jobs, bikes
+from app.db.models import transport_jobs, bikes, delete_requests
 from app.auth.dependencies import require_role
 
 router = APIRouter()
@@ -58,3 +58,19 @@ async def delete_job(job_id: int, dep=Depends(require_role(["admin", "operador"]
     if result:
         return {"message": "Trabajo eliminado"}
     raise HTTPException(status_code=404, detail="Trabajo no encontrado")
+
+@router.post("/{job_id}/delete-request")
+async def request_delete_job(job_id: int, payload: dict, user=Depends(require_role(["cliente", "transportista"]))):
+    reason = payload.get("reason")
+    if not reason:
+        raise HTTPException(status_code=400, detail="Se requiere un motivo para solicitar el borrado.")
+
+    query = insert(delete_requests).values(
+        user_id=user["user_id"],
+        resource_type="job",
+        resource_id=job_id,
+        reason=reason
+    )
+    await database.execute(query)
+    return {"message": "Solicitud de borrado registrada"}
+

@@ -40,8 +40,9 @@ async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
 
     # 👇 Corregido: incluir el rol en el token
     token = create_access_token({
-        "sub": user["email"],
-        "role": user["role"]
-    })
+    "sub": user["email"],
+    "role": user["role"],
+    "user_id": user["id"]  # 👈 NECESARIO si se quiere acceder al user_id desde el token
+})
     return {"access_token": token, "token_type": "bearer"}
 

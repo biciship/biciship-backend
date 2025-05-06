@@ -1,11 +1,9 @@
 from fastapi import FastAPI
 import logging
 
-from app.routers import users, bikes, transport_jobs
+from app.routers import users, bikes, transport_jobs, delete_requests  # 👈 AÑADIDO
 from app.auth import routes as auth_routes
 from app.db.database import database
-
-
 
 app = FastAPI(title="Biciship API")
 
@@ -13,7 +11,7 @@ app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(bikes.router, prefix="/bikes", tags=["Bikes"])
 app.include_router(transport_jobs.router, prefix="/transport-jobs", tags=["Transport Jobs"])
 app.include_router(auth_routes.router, prefix="/auth", tags=["Auth"])
-
+app.include_router(delete_requests.router, prefix="/delete-requests", tags=["Delete Requests"])  # 👈 AÑADIDO
 
 @app.on_event("startup")
 async def startup():

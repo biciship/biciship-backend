@@ -10,22 +10,19 @@ ALGORITHM = "HS256"
 def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload
+        email = payload.get("sub")
+        role = payload.get("role")
+        if not email or not role:
+            raise HTTPException(status_code=401, detail="Token incompleto")
+        return {
+            "email": email,
+            "role": role,
+            "user_id": payload.get("user_id")  # Opcional: si luego quieres extenderlo
+        }
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido o expirado",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-def get_current_user_role(token: str = Depends(oauth2_scheme)) -> str:
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        return payload.get("role")
-    except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="No autorizado",
             headers={"WWW-Authenticate": "Bearer"},
         )
 

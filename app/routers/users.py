@@ -21,7 +21,7 @@ async def create_user(payload: dict, user=Depends(require_role(["admin"]))):
     if not name or not email:
         raise HTTPException(status_code=400, detail="Name and email are required")
 
-    query = insert(users).values(name=name, email=email, role=role)
+    query = insert(users).values(name=name, email=email, password=hashed_pw, role=role)
     last_record_id = await database.execute(query)
     return {"id": last_record_id}
 

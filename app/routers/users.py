@@ -3,6 +3,7 @@ from sqlalchemy import insert, select, delete
 from app.db.database import database
 from app.db.models import users
 from app.auth.dependencies import require_role
+from app.auth.utils import hash_password
 
 router = APIRouter()
 
@@ -20,6 +21,8 @@ async def create_user(payload: dict, user=Depends(require_role(["admin"]))):
 
     if not name or not email:
         raise HTTPException(status_code=400, detail="Name and email are required")
+
+    hashed_pw = hash_password(password)  
 
     query = insert(users).values(name=name, email=email, password=hashed_pw, role=role)
     last_record_id = await database.execute(query)

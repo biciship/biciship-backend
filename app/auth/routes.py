@@ -32,12 +32,18 @@ async def register_user(payload: dict):
 # Login
 @router.post("/login")
 async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
-    print(f"Username recibido: {form_data.username}")
-    print(f"Password recibido: {form_data.password}")
     query = select(users).where(users.c.email == form_data.username)
-    print(f"QUERY: {query}")
     user = await database.fetch_one(query)
-    print(f"Resultado de query: {user}")
+
+    print(f"Intento login para: {form_data.username}")
+    print(f"Contraseña enviada: {form_data.password}")
+    if user:
+        print(f"Usuario encontrado en BD: {user['email']}")
+        print(f"Hash guardado: {user['password']}")
+        is_valid = verify_password(form_data.password, user["password"])
+        print(f"Contraseña válida: {is_valid}")
+    else:
+        print("No se encontró el usuario.")
 
     if not user or not verify_password(form_data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")

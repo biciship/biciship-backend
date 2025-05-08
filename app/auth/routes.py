@@ -38,21 +38,21 @@ async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
     print(f"Intento login para: {form_data.username}")
     print(f"Contraseña enviada: {form_data.password}")
     if user:
-        print(f"Usuario encontrado en BD: {user['email']}")
-        print(f"Hash guardado: {user['password']}")
-        is_valid = verify_password(form_data.password, user["password"])
+        print(f"Usuario encontrado en BD: {user.email}")
+        print(f"Hash guardado: {user.password}")
+        is_valid = verify_password(form_data.password, user.password)
         print(f"Contraseña válida: {is_valid}")
     else:
         print("No se encontró el usuario.")
 
-    if not user or not verify_password(form_data.password, user["password"]):
+    if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
-    # 👇 Corregido: incluir el rol en el token
     token = create_access_token({
-    "sub": user["email"],
-    "role": user["role"],
-    "user_id": user["id"]  # 👈 NECESARIO si se quiere acceder al user_id desde el token
-})
+        "sub": user.email,
+        "role": user.role,
+        "user_id": user.id
+    })
     return {"access_token": token, "token_type": "bearer"}
+
 

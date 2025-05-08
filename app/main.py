@@ -16,7 +16,7 @@ app.include_router(bikes.router, prefix="/bikes", tags=["Bikes"])
 app.include_router(transport_jobs.router, prefix="/transport-jobs", tags=["Transport Jobs"])
 app.include_router(auth_routes.router, prefix="/auth", tags=["Auth"])
 app.include_router(delete_requests.router, prefix="/delete-requests", tags=["Delete Requests"])
-app.include_router(health.router)  # 👈 /debug incluido correctamente
+#app.include_router(health.router)  # 👈 /debug incluido correctamente
 
 @app.on_event("startup")
 async def startup():

@@ -1,20 +1,21 @@
 from fastapi import FastAPI
 import logging
+import os
 
-from app.routers import users, bikes, transport_jobs, delete_requests  # 👈 AÑADIDO
+from app.routers import users, bikes, transport_jobs, delete_requests
 from app.auth import routes as auth_routes
 from app.db.database import database
-from app.routers import health  # o debug
-app.include_router(health.router)
+from app.routers import health  # contiene el endpoint /debug
 
+app = FastAPI(title="Biciship API")  # 👈 esta línea debe ir antes que los includes
 
-app = FastAPI(title="Biciship API")
-
+# Incluir rutas después de definir `app`
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(bikes.router, prefix="/bikes", tags=["Bikes"])
 app.include_router(transport_jobs.router, prefix="/transport-jobs", tags=["Transport Jobs"])
 app.include_router(auth_routes.router, prefix="/auth", tags=["Auth"])
-app.include_router(delete_requests.router, prefix="/delete-requests", tags=["Delete Requests"])  # 👈 AÑADIDO
+app.include_router(delete_requests.router, prefix="/delete-requests", tags=["Delete Requests"])
+app.include_router(health.router)  # 👈 /debug incluido correctamente
 
 @app.on_event("startup")
 async def startup():

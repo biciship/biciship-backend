@@ -32,6 +32,8 @@ async def register_user(payload: dict):
 # Login
 @router.post("/login")
 async def login_user(form_data: OAuth2PasswordRequestForm = Depends()):
+    print(f"Username recibido: {form_data.username}")
+    print(f"Password recibido: {form_data.password}")
     query = select(users).where(users.c.email == form_data.username)
     user = await database.fetch_one(query)
 

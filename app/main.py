@@ -4,6 +4,9 @@ import logging
 from app.routers import users, bikes, transport_jobs, delete_requests  # 👈 AÑADIDO
 from app.auth import routes as auth_routes
 from app.db.database import database
+from app.routers import health  # o debug
+app.include_router(health.router)
+
 
 app = FastAPI(title="Biciship API")
 

@@ -5,7 +5,8 @@ import os
 from app.routers import users, bikes, transport_jobs, delete_requests
 from app.auth import routes as auth_routes
 from app.db.database import database
-from app.routers import health  # contiene el endpoint /debug
+from app import health
+
 
 app = FastAPI(title="Biciship API")  # 👈 esta línea debe ir antes que los includes
 

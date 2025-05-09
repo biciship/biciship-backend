@@ -35,3 +35,10 @@ async def shutdown():
 @app.get("/")
 def root():
     return {"message": "Biciship API funcionando 🚲"}
+
+@app.get("/debug-db-url")
+def debug_db_url():
+    return {
+        "DATABASE_URL": os.getenv("DATABASE_URL"),
+        "EXISTE_CLOUDSQL_DIR": os.path.exists("/cloudsql")
+    }

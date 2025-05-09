@@ -2,7 +2,8 @@ fastapi
 uvicorn[standard]
 databases[postgresql]
 asyncpg
-psycopg2-binary
+#psycopg2-binary
+cloud-sql-python-connector[pg8000]
 python-dotenv
 sqlalchemy
 passlib[bcrypt]

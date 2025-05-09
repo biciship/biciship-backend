@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from databases import Database
 import os
+import os
+print("✅ DATABASE_URL:", os.getenv("DATABASE_URL"))
+print("📂 ¿Existe /cloudsql?:", os.path.exists("/cloudsql"))
+
 print("🔍 Lanzando test_connection app")
 
 app = FastAPI()

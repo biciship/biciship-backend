@@ -7,9 +7,6 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 🔧 Copiar el archivo de entorno (asegúrate de que existe)
-COPY .env .  # <--- ESTA LÍNEA ES CLAVE
-
 # Copiar el código fuente
 COPY . .
 

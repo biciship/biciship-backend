@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from databases import Database
 import os
+print("🔍 Lanzando test_connection app")
 
 app = FastAPI()
 

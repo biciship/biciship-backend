@@ -3,7 +3,7 @@ uvicorn[standard]
 databases[postgresql]
 asyncpg
 #psycopg2-binary
-cloud-sql-python-connector[pg8000]
+#cloud-sql-python-connector[pg8000]
 python-dotenv
 sqlalchemy
 passlib[bcrypt]

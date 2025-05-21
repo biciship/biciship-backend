@@ -9,27 +9,22 @@ from app import health
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logging.info("Iniciando conexión con la base de datos...")
+    logging.info("🔵 Iniciando lifespan, intentando conectar a la DB...")
     try:
         await database.connect()
-        logging.info("✅ Base de datos conectada correctamente.")
+        logging.info("✅ Conexión inicial a la DB exitosa.")
     except Exception as e:
-        logging.error(f"❌ Error al conectar con la base de datos: {e}")
-        raise e
-
+        logging.error(f"❌ Error crítico al conectar a la DB: {e}")
     yield
-
-    logging.info("Cerrando conexión con la base de datos...")
     try:
         await database.disconnect()
-        logging.info("✅ Base de datos desconectada correctamente.")
+        logging.info("✅ Desconectado correctamente de la DB.")
     except Exception as e:
-        logging.warning(f"❌ Error al desconectar la base de datos: {e}")
-
+        logging.warning(f"❌ Error al desconectar la DB: {e}")
 
 app = FastAPI(title="Biciship API 🚲", lifespan=lifespan)
 
-# Incluir rutas después de definir `app`
+# Incluir rutas
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(bikes.router, prefix="/bikes", tags=["Bikes"])
 app.include_router(transport_jobs.router, prefix="/transport-jobs", tags=["Transport Jobs"])
@@ -38,6 +33,17 @@ app.include_router(delete_requests.router, prefix="/delete-requests", tags=["Del
 app.include_router(health.router)
 
 @app.get("/")
-def root():
-    logging.info("Endpoint raíz (/) funcionando correctamente.")
+async def root():
+    logging.info("🔵 Endpoint raíz funcionando.")
     return {"message": "Biciship API funcionando 🚲"}
+
+@app.get("/debug")
+async def debug():
+    try:
+        await database.connect()
+        logging.info("✅ Conectado correctamente (debug endpoint).")
+        await database.disconnect()
+        return {"status": "DB connection OK"}
+    except Exception as e:
+        logging.error(f"❌ Falló la conexión a la DB (debug endpoint): {e}")
+        return {"status": f"DB connection error: {e}"}

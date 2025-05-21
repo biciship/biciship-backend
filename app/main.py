@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from app.routers import users, bikes, transport_jobs, delete_requests
@@ -24,7 +25,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Biciship API 🚲", lifespan=lifespan)
 
-# Incluir rutas
+# Incluir rutas después de definir `app`
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(bikes.router, prefix="/bikes", tags=["Bikes"])
 app.include_router(transport_jobs.router, prefix="/transport-jobs", tags=["Transport Jobs"])
@@ -37,13 +38,7 @@ async def root():
     logging.info("🔵 Endpoint raíz funcionando.")
     return {"message": "Biciship API funcionando 🚲"}
 
-@app.get("/debug")
-async def debug():
-    try:
-        await database.connect()
-        logging.info("✅ Conectado correctamente (debug endpoint).")
-        await database.disconnect()
-        return {"status": "DB connection OK"}
-    except Exception as e:
-        logging.error(f"❌ Falló la conexión a la DB (debug endpoint): {e}")
-        return {"status": f"DB connection error: {e}"}
+@app.get("/debug-cloudsql")
+async def debug_cloudsql():
+    exists = os.path.exists("/cloudsql")
+    files = os.listdir("/cloudsql") if

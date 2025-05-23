@@ -1,0 +1,22 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'europe-west1-docker.pkg.dev/biciship-f4910/cloud-run-source-deploy/biciship-backend', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'europe-west1-docker.pkg.dev/biciship-f4910/cloud-run-source-deploy/biciship-backend']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - biciship-api
+      - --image=europe-west1-docker.pkg.dev/biciship-f4910/cloud-run-source-deploy/biciship-backend
+      - --region=europe-west1
+      - --platform=managed
+      - --allow-unauthenticated
+      - --vpc-connector=vpc-access-europe
+      - --add-cloudsql-instances=biciship:f4910:europe-west1:biciship-db3
+      - --set-env-vars=DATABASE_URL=postgresql+asyncpg://api_user:Madrid1@localhost/biciship?host=/cloudsql/biciship:f4910:europe-west1:biciship-db3,SECRET_KEY=MJIFA8989182024.mayo16
+
+timeout: 900s
